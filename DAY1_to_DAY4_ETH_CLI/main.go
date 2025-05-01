@@ -1,7 +1,14 @@
 package main
 
-import "ethcli/cmd"
-
+import (
+	"os"
+	"ethcli/cmd"
+)
 func main() {
-	cmd.Execute()
+	switch os.Args[1] {
+	case "queryblock":
+		cmd.QueryBlock()
+	default:
+		cmd.Execute()
+	}
 }
