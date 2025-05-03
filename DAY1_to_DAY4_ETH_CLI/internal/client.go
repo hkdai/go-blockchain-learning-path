@@ -5,6 +5,9 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -13,6 +16,15 @@ import (
 
 func ConnectToEthereum(rpcURL string) (*ethclient.Client, context.Context, context.CancelFunc) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+
+	//添加信号处理，优雅退出
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		sig := <-sigChan
+		log.Panicf("接收到系统信号：%v,正在优雅退出...", sig)
+		cancel()
+	}()
 
 	var client *ethclient.Client
 	var err error
