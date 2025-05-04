@@ -7,27 +7,34 @@ import (
 
 func main() {
 	var chain []blockchain.Block
-	firstblock := blockchain.GenerateFirstBlock()
-	chain = append(chain, firstblock)
-
-	//老版本的直接生成区块
-	// for i := 1; i <= 5; i++ {
-	// 	newBlock := blockchain.GenerateNextBlock(chain[len(chain)-1], fmt.Sprintf("区块数据 %d", i))
-	// 	chain = append(chain, newBlock)
-	// }
 
 	//定义难度系数
 	var diffculty int = 6
-	//新版本挖矿生成区块
-	for i := 1; i <= 5; i++ {
-		fmt.Printf("正在挖第%d个区块..\n", i)
-		newBlock := blockchain.MineBlock(firstblock, fmt.Sprintf("区块数据 %d", i), diffculty)
-		chain = append(chain, newBlock)
-		fmt.Printf("区块挖出！Nonce ：%d Hash: %s\n\n", newBlock.Nonce, newBlock.Hash)
+
+	//创建两个钱包
+	w1 := blockchain.NewWallet()
+	w2 := blockchain.NewWallet()
+
+	fmt.Println("钱包1地址:", w1.Address)
+	fmt.Println("钱包2地址:", w2.Address)
+
+	firstblock := blockchain.GenerateFirstBlock()
+	chain = append(chain, firstblock)
+
+	txs := []blockchain.Transaction{
+		{From: "SYSTEM", To: w1.Address, Amount: 100},
+		{From: "SYSTEM", To: w2.Address, Amount: 20},
 	}
 
-	for _, block := range chain {
-		fmt.Printf("高度: %d\nHash: %s\n上一个: %s\n数据: %s\n---\n",
-			block.Index, block.Hash, block.PrevHash, block.Data)
+	newBlock := blockchain.MineBlock(firstblock, txs, diffculty)
+
+	chain = append(chain, newBlock)
+
+	for _, tx := range chain {
+		fmt.Printf("高度：%d\n哈希：%s\n", tx.Index, tx.Hash)
+		for _, data := range tx.Data {
+			fmt.Printf("from:%s to:%s amount:%d\n", data.From, data.To, data.Amount)
+		}
+		fmt.Println("---")
 	}
 }

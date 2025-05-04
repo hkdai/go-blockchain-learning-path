@@ -11,14 +11,18 @@ type Block struct {
 	Index     int64
 	Timestamp int64
 	PrevHash  string
-	Data      string
+	Data      []Transaction
 	Hash      string
 	Nonce     int64
 }
 
 // 根据区块信息生成对应的hash
 func GenerateHash(block Block) string {
-	record := fmt.Sprintf("%d%d%s%s", block.Index, block.Timestamp, block.PrevHash, block.Data)
+	dataStr := ""
+	for _, tx := range block.Data {
+		dataStr += tx.From + tx.To + fmt.Sprintf("%d", tx.Amount)
+	}
+	record := fmt.Sprintf("%d%d%s%s%d", block.Index, block.Timestamp, block.PrevHash, dataStr, block.Nonce)
 	h := sha256.New()
 	h.Write([]byte(record))
 	return fmt.Sprintf("%x", h.Sum(nil))
@@ -26,18 +30,24 @@ func GenerateHash(block Block) string {
 
 // 生成创世区块
 func GenerateFirstBlock() Block {
+	firstTx := Transaction{
+		From:   "SYSTEM",
+		To:     "创世用户",
+		Amount: 100000,
+	}
+	txs := []Transaction{firstTx}
 	block := Block{
 		Index:     0,
 		Timestamp: time.Now().Unix(),
 		PrevHash:  "",
-		Data:      "FirstBlock",
+		Data:      txs,
 	}
 	block.Hash = GenerateHash(block)
 	return block
 }
 
 // 挖矿产生下一个区块对象
-func MineBlock(prevBlock Block, data string, diffculty int) Block {
+func MineBlock(prevBlock Block, data []Transaction, diffculty int) Block {
 	newBlock := Block{
 		Index:     prevBlock.Index + 1,
 		Timestamp: time.Now().Unix(),
@@ -52,22 +62,20 @@ func MineBlock(prevBlock Block, data string, diffculty int) Block {
 	var nonce int64
 	//开始循环计算，直到符合diffculty的系数
 	for nonce = 0; ; nonce++ {
-		//拼接字段
-		record := fmt.Sprintf("%d%d%s%s%d", newBlock.Index, newBlock.Timestamp, newBlock.PrevHash, newBlock.Data, nonce)
-		//计算hash
-		h := sha256.Sum256([]byte(record))
-		hash = fmt.Sprintf("%x", h)
+
+		newBlock.Nonce = nonce
+		hash = GenerateHash(newBlock)
 		if strings.HasPrefix(hash, prefix) {
 			break
 		}
 	}
 	newBlock.Hash = hash
-	newBlock.Nonce = nonce
+
 	return newBlock
 }
 
 // 生成下一个区块对象
-func GenerateNextBlock(prevBlock Block, data string) Block {
+func GenerateNextBlock(prevBlock Block, data []Transaction) Block {
 	newBlock := Block{
 		Index:     prevBlock.Index + 1,
 		Timestamp: time.Now().Unix(),
