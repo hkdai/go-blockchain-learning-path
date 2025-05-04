@@ -3,6 +3,7 @@ package blockchain
 import (
 	"crypto/sha256"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -12,6 +13,7 @@ type Block struct {
 	PrevHash  string
 	Data      string
 	Hash      string
+	Nonce     int64
 }
 
 // 根据区块信息生成对应的hash
@@ -32,6 +34,36 @@ func GenerateFirstBlock() Block {
 	}
 	block.Hash = GenerateHash(block)
 	return block
+}
+
+// 挖矿产生下一个区块对象
+func MineBlock(prevBlock Block, data string, diffculty int) Block {
+	newBlock := Block{
+		Index:     prevBlock.Index + 1,
+		Timestamp: time.Now().Unix(),
+		PrevHash:  prevBlock.Hash,
+		Data:      data,
+	}
+
+	//根据挖矿系数生成指定前缀，让生成的hash直接比对是否HasPrefix
+	prefix := strings.Repeat("0", diffculty)
+
+	var hash string
+	var nonce int64
+	//开始循环计算，直到符合diffculty的系数
+	for nonce = 0; ; nonce++ {
+		//拼接字段
+		record := fmt.Sprintf("%d%d%s%s%d", newBlock.Index, newBlock.Timestamp, newBlock.PrevHash, newBlock.Data, nonce)
+		//计算hash
+		h := sha256.Sum256([]byte(record))
+		hash = fmt.Sprintf("%x", h)
+		if strings.HasPrefix(hash, prefix) {
+			break
+		}
+	}
+	newBlock.Hash = hash
+	newBlock.Nonce = nonce
+	return newBlock
 }
 
 // 生成下一个区块对象
