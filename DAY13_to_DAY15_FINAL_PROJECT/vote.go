@@ -26,7 +26,7 @@ func main() {
 	fmt.Println("✅ 成功连接节点")
 
 	//加载私钥 & 推导账户地址
-	privateKey, err := crypto.HexToECDSA("ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80") //此处的私钥，要求不含0x
+	privateKey, err := crypto.HexToECDSA("c526ee95bf44d8fc405a158bb884d9d1238d99f0612e9f33d006bb0789009aaa") //此处的私钥，要求不含0x
 	if err != nil {
 		log.Fatal("私钥解析失败：", err)
 	}
@@ -44,7 +44,7 @@ func main() {
 		log.Fatal("构造调用数据失败:", err)
 	}
 	//构造并签名交易
-	to := common.HexToAddress("0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9")
+	to := common.HexToAddress("0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9")
 	nonce, _ := client.PendingNonceAt(context.Background(), fromAddress)
 	gasPrice, _ := client.SuggestGasPrice(context.Background())
 

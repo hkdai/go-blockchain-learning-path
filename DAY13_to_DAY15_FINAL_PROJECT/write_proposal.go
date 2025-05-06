@@ -44,7 +44,7 @@ func main() {
 		log.Fatal("构造调用数据失败:", err)
 	}
 	//构造并签名交易
-	to := common.HexToAddress("0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9")
+	to := common.HexToAddress("0x5FbDB2315678afecb367f032d93F642f64180aa3")
 	nonce, _ := client.PendingNonceAt(context.Background(), fromAddress)
 	gasPrice, _ := client.SuggestGasPrice(context.Background())
 

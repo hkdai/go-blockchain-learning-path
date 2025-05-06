@@ -8,7 +8,7 @@ contract Vote {
     mapping(address=> bool) public hasVoted;
 
     event ProposalAdded(string proposal);
-    event Voted(address voter,string proposal);
+    event Voted(address indexed voter,string proposal);
 
     modifier onlyOwner(){
         require(msg.sender==owner,"only admin");

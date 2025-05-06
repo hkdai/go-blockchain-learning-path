@@ -33,7 +33,7 @@ func main() {
 	}
 	fmt.Println("ABI 函数数量:", len(parsedABI.Methods))
 	fmt.Println("ABI加载成功")
-	contractAddr := common.HexToAddress("0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9")
+	contractAddr := common.HexToAddress("0x5FbDB2315678afecb367f032d93F642f64180aa3")
 	fmt.Println("✅ 合约地址绑定成功:", contractAddr.Hex())
 
 	//构造调用函数，这里是调用votes，查看里面Option A的投票数量请求
